@@ -1,0 +1,11 @@
+# Deny all
+*/**
+
+# Allow only resources
+!go.*
+!pkg/**/*
+!internal/**/*
+!cmd/**/*
+!build/**/*
+!Makefile
+!.git/**/*
