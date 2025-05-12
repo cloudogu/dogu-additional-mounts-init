@@ -33,9 +33,9 @@ func (v *VolumeMountCopier) CopyVolumeMount(srcToDest SrcToDestinationPaths) err
 	isSubPathMount := true
 
 	for src, dest := range srcToDest {
-		log.Println(fmt.Sprintf("Start copy files from dir %s to %s", src, dest))
+		log.Printf("Start copy files from dir %s to %s", src, dest)
 		data := filepath.Join(src, "..data")
-		log.Println(fmt.Sprintf("Checking data symlink %s", data))
+		log.Printf("Checking data symlink %s", data)
 		dataFileInfo, err := v.fileSystem.Lstat(data)
 
 		if err == nil && dataFileInfo.Mode()&os.ModeSymlink != 0 {

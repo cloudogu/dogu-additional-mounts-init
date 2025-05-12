@@ -20,8 +20,8 @@ type volumeCopier interface {
 
 func main() {
 	if len(os.Args) < 2 {
-		log.Fatal(fmt.Sprintf("expected at least on of the following commands: \n"+
-			"%s - copy files from specified volumes to destination paths", copyCmd.Name()))
+		log.Fatalf("expected at least on of the following commands: \n"+
+			"%s - copy files from specified volumes to destination paths", copyCmd.Name())
 	}
 
 	var err error
@@ -44,6 +44,9 @@ func handleCopyCommand(args []string, copier volumeCopier) error {
 	copyCmd.Var(&sourcePaths, "source", "")
 	copyCmd.Var(&targetPaths, "target", "")
 	err := copyCmd.Parse(args)
+	if err != nil {
+		return fmt.Errorf("failed to parse arguments: %w", err)
+	}
 
 	if len(sourcePaths) != len(targetPaths) {
 		return fmt.Errorf("amount of source and target paths aren't equal")

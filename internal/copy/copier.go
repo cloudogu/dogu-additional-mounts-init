@@ -46,7 +46,7 @@ func copyFile(srcfilePath, destFilePath string, fileSystem Filesystem) error {
 		return fmt.Errorf("failed to flush buffer to file %s: %w", destFilePath, err)
 	}
 
-	log.Println(fmt.Sprintf("copied file %s to %s", srcfilePath, destFilePath))
+	log.Printf("copied file %s to %s", srcfilePath, destFilePath)
 
 	return nil
 }
