@@ -14,7 +14,6 @@ RUN go mod download
 # Copy the go source
 COPY cmd cmd
 COPY internal internal
-COPY pkg pkg
 
 # Copy .git files as the build process builds the current commit id into the binary via ldflags
 COPY .git .git
