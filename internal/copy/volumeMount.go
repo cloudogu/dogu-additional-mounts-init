@@ -73,9 +73,9 @@ func (v *VolumeMountCopier) CopyVolumeMount(srcToDest SrcToDestinationPaths) err
 // the files are behind symlinks and the resolved folder is used as source. This path from src to the resolved folder
 // should not be copied to the destination.
 func (v *VolumeMountCopier) walk(srcVolume, destVolume, filePath string, isSubPathMount bool, d fs.DirEntry) error {
-	log.Println(fmt.Sprintf("Processing file %s", filePath))
+	log.Printf("Processing file %s", filePath)
 	if d.IsDir() {
-		log.Println(fmt.Sprintf("Skip dir %s", filePath))
+		log.Printf("Skip dir %s", filePath)
 		return nil
 	}
 
@@ -108,7 +108,7 @@ func (v *VolumeMountCopier) walk(srcVolume, destVolume, filePath string, isSubPa
 		}
 
 		if v.fileSystem.SameFile(sourceFileInfo, destFileInfo) {
-			log.Println(fmt.Sprintf("source file %s and destination file %s are equal", filePath, destinationFilePath))
+			log.Printf("source file %s and destination file %s are equal", filePath, destinationFilePath)
 			return nil
 		}
 	}
