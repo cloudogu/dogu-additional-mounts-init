@@ -6,10 +6,11 @@ WORKDIR /workspace
 # Copy the Go Modules manifests
 COPY go.mod go.mod
 COPY go.sum go.sum
+COPY .netrc /root/.netrc
 
 # cache deps before building and copying source so that we don't need to re-download as much
 # and so that source changes don't invalidate our downloaded layer
-RUN go mod download
+RUN GOPRIVATE=github.com/cloudogu/doguctl,github.com/cloudogu/cesapp go mod download
 
 # Copy the go source
 COPY cmd cmd
