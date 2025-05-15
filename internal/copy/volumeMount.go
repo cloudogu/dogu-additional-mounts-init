@@ -62,8 +62,7 @@ func (v *VolumeMountCopier) CopyVolumeMount(srcToDest []SrcAndDestination) error
 
 		err = v.fileSystem.WalkDir(src, func(path string, d fs.DirEntry, err error) error {
 			if err != nil {
-				multiErr = append(multiErr, fmt.Errorf("error during filepath walk for path %s: %w", src, err))
-				panic(errors.Join(multiErr...).Error())
+				multiErr = append(multiErr, fmt.Errorf("error during filepath walk for path %s: %w", path, err))
 				return nil
 			}
 
