@@ -16,7 +16,7 @@ func TestVolumeMountCopier_CopyVolumeMount(t *testing.T) {
 		sut := VolumeMountCopier{}
 
 		// when
-		err := sut.CopyVolumeMount(make(SrcToDestinationPaths))
+		err := sut.CopyVolumeMount([]SrcAndDestination{})
 
 		// then
 		require.NoError(t, err)
@@ -24,8 +24,12 @@ func TestVolumeMountCopier_CopyVolumeMount(t *testing.T) {
 
 	t.Run("should return error on error resolving symlink", func(t *testing.T) {
 		// given
-		src := "/mount"
-		dest := "/custom/config"
+		copies := []SrcAndDestination{
+			{
+				Src:  "/mount",
+				Dest: "/custom/config",
+			},
+		}
 		dataFileInfo := myFileInfo{
 			mode:  os.ModeSymlink,
 			isDir: true,
@@ -39,7 +43,7 @@ func TestVolumeMountCopier_CopyVolumeMount(t *testing.T) {
 		sut.fileSystem = fileSystemMock
 
 		// when
-		err := sut.CopyVolumeMount(map[string]string{src: dest})
+		err := sut.CopyVolumeMount(copies)
 
 		// then
 		require.Error(t, err)
@@ -47,18 +51,22 @@ func TestVolumeMountCopier_CopyVolumeMount(t *testing.T) {
 
 	t.Run("should handle file with subPath volume mount", func(t *testing.T) {
 		// given
-		src := "/mount"
-		dest := "/custom/config"
+		copies := []SrcAndDestination{
+			{
+				Src:  "/mount",
+				Dest: "/custom/config",
+			},
+		}
 
 		sut := VolumeMountCopier{}
 		fileSystemMock := NewMockFilesystem(t)
 		fileSystemMock.EXPECT().Lstat("/mount/..data").Return(nil, assert.AnError)
-		fileSystemMock.EXPECT().WalkDir(src, mock.AnythingOfType("fs.WalkDirFunc")).Return(nil)
+		fileSystemMock.EXPECT().WalkDir("/mount", mock.AnythingOfType("fs.WalkDirFunc")).Return(nil)
 
 		sut.fileSystem = fileSystemMock
 
 		// when
-		err := sut.CopyVolumeMount(map[string]string{src: dest})
+		err := sut.CopyVolumeMount(copies)
 
 		// then
 		require.NoError(t, err)
@@ -66,8 +74,12 @@ func TestVolumeMountCopier_CopyVolumeMount(t *testing.T) {
 
 	t.Run("should handle file without subPath volume mount", func(t *testing.T) {
 		// given
-		src := "/mount"
-		dest := "/custom/config"
+		copies := []SrcAndDestination{
+			{
+				Src:  "/mount",
+				Dest: "/custom/config",
+			},
+		}
 		symLinkPath := "/mount/..data"
 		// realFilePath := "/mount/..20250504/file"
 		realDirPath := "/mount/..20250504"
@@ -90,7 +102,7 @@ func TestVolumeMountCopier_CopyVolumeMount(t *testing.T) {
 		sut.fileSystem = fileSystemMock
 
 		// when
-		err := sut.CopyVolumeMount(map[string]string{src: dest})
+		err := sut.CopyVolumeMount(copies)
 
 		// then
 		require.NoError(t, err)
@@ -165,13 +177,13 @@ func TestCopier_resolveSymLinkChain(t *testing.T) {
 }
 
 func TestCopier_walk(t *testing.T) {
-	t.Run("should do nothing if sourc file is a dir", func(t *testing.T) {
+	t.Run("should do nothing if source file is a dir", func(t *testing.T) {
 		// given
 		srcFile := "/tmp/mount/dir"
 		srcFileInfo := &myFileInfo{mode: os.ModeDir, isDir: true}
 		dirEntry := &myDirEntry{fileInfo: srcFileInfo}
 
-		sut := NewVolumeMountCopier()
+		sut := &VolumeMountCopier{}
 
 		// when
 		err := sut.walk("", "", srcFile, false, dirEntry)
@@ -186,7 +198,7 @@ func TestCopier_walk(t *testing.T) {
 		srcFileInfo := &myFileInfo{mode: os.ModePerm, isDir: false}
 		dirEntry := &myDirEntry{fileInfo: srcFileInfo, infoErr: assert.AnError}
 
-		sut := NewVolumeMountCopier()
+		sut := &VolumeMountCopier{}
 
 		// when
 		err := sut.walk("", "", srcFile, false, dirEntry)
@@ -202,7 +214,7 @@ func TestCopier_walk(t *testing.T) {
 		srcFileInfo := &myFileInfo{mode: os.ModeSymlink, isDir: false}
 		dirEntry := &myDirEntry{fileInfo: srcFileInfo}
 
-		sut := NewVolumeMountCopier()
+		sut := &VolumeMountCopier{}
 
 		// when
 		err := sut.walk("", "", srcFile, false, dirEntry)
@@ -225,7 +237,7 @@ func TestCopier_walk(t *testing.T) {
 		filesystemMock := NewMockFilesystem(t)
 		filesystemMock.EXPECT().Stat(destFile).Return(destFileInfo, nil)
 
-		sut := NewVolumeMountCopier()
+		sut := &VolumeMountCopier{}
 		sut.fileSystem = filesystemMock
 
 		// when
@@ -251,9 +263,12 @@ func TestCopier_walk(t *testing.T) {
 		filesystemMock.EXPECT().Stat("/var/lib/custom/config").Return(destFileInfo, assert.AnError)
 		copyMock := NewMockCopier(t)
 		copyMock.EXPECT().Execute(srcFile, destFile, filesystemMock).Return(nil)
+		fileTrackerMock := newMockFileTracker(t)
+		fileTrackerMock.EXPECT().AddFile("/var/lib/custom/config").Return(nil)
 
-		sut := NewVolumeMountCopier()
+		sut := &VolumeMountCopier{}
 		sut.fileSystem = filesystemMock
+		sut.fileTracker = fileTrackerMock
 		sut.copier = copyMock.Execute
 
 		// when
@@ -278,9 +293,12 @@ func TestCopier_walk(t *testing.T) {
 		filesystemMock.EXPECT().SameFile(srcFileInfo, destFileInfo).Return(false)
 		copyMock := NewMockCopier(t)
 		copyMock.EXPECT().Execute(srcFile, destFile, filesystemMock).Return(nil)
+		fileTrackerMock := newMockFileTracker(t)
+		fileTrackerMock.EXPECT().AddFile("/var/lib/custom/config").Return(nil)
 
-		sut := NewVolumeMountCopier()
+		sut := &VolumeMountCopier{}
 		sut.fileSystem = filesystemMock
+		sut.fileTracker = fileTrackerMock
 		sut.copier = copyMock.Execute
 
 		// when
@@ -303,9 +321,11 @@ func TestCopier_walk(t *testing.T) {
 		filesystemMock.EXPECT().Stat("/var/lib/custom/config").Return(destFileInfo, nil)
 		filesystemMock.EXPECT().SameFile(srcFileInfo, destFileInfo).Return(true)
 		copyMock := NewMockCopier(t)
+		fileTrackerMock := newMockFileTracker(t)
 
-		sut := NewVolumeMountCopier()
+		sut := &VolumeMountCopier{}
 		sut.fileSystem = filesystemMock
+		sut.fileTracker = fileTrackerMock
 		sut.copier = copyMock.Execute
 
 		// when
@@ -330,9 +350,12 @@ func TestCopier_walk(t *testing.T) {
 		filesystemMock.EXPECT().Stat("/var/lib/custom/dir1/dir2/config").Return(destFileInfo, assert.AnError)
 		copyMock := NewMockCopier(t)
 		copyMock.EXPECT().Execute(srcFile, destFile, filesystemMock).Return(nil)
+		fileTrackerMock := newMockFileTracker(t)
+		fileTrackerMock.EXPECT().AddFile("/var/lib/custom/dir1/dir2/config").Return(nil)
 
-		sut := NewVolumeMountCopier()
+		sut := &VolumeMountCopier{}
 		sut.fileSystem = filesystemMock
+		sut.fileTracker = fileTrackerMock
 		sut.copier = copyMock.Execute
 
 		// when

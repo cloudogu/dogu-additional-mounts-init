@@ -10,17 +10,25 @@ import (
 	"path/filepath"
 )
 
-type SrcToDestinationPaths map[string]string
+type SrcAndDestination struct {
+	Src  string
+	Dest string
+}
 
 type Copier func(src, dest string, filesystem Filesystem) error
 
-type VolumeMountCopier struct {
-	fileSystem Filesystem
-	copier     Copier
+type fileTracker interface {
+	AddFile(path string) error
 }
 
-func NewVolumeMountCopier() *VolumeMountCopier {
-	return &VolumeMountCopier{&fileSystem{}, copyFile}
+type VolumeMountCopier struct {
+	fileSystem  Filesystem
+	copier      Copier
+	fileTracker fileTracker
+}
+
+func NewVolumeMountCopier(fileSystem Filesystem, fileTracker fileTracker) *VolumeMountCopier {
+	return &VolumeMountCopier{fileSystem, copyFile, fileTracker}
 }
 
 // CopyVolumeMount copies all files from the given src path in srcToDest parameter to the given paths.
@@ -28,11 +36,13 @@ func NewVolumeMountCopier() *VolumeMountCopier {
 // Existing files will be overwritten.
 // If the volume was mounted without the subPath Attribute it resolves the data symlink and copies the real files
 // from the mount. If the subPath attribute was used it just copies all regular files to the destination.
-func (v *VolumeMountCopier) CopyVolumeMount(srcToDest SrcToDestinationPaths) error {
+func (v *VolumeMountCopier) CopyVolumeMount(srcToDest []SrcAndDestination) error {
 	var multiErr []error
 	isSubPathMount := true
 
-	for src, dest := range srcToDest {
+	for _, obj := range srcToDest {
+		src := obj.Src
+		dest := obj.Dest
 		log.Printf("Start copy files from dir %s to %s", src, dest)
 		data := filepath.Join(src, "..data")
 		log.Printf("Checking data symlink %s", data)
@@ -52,7 +62,8 @@ func (v *VolumeMountCopier) CopyVolumeMount(srcToDest SrcToDestinationPaths) err
 
 		err = v.fileSystem.WalkDir(src, func(path string, d fs.DirEntry, err error) error {
 			if err != nil {
-				multiErr = append(multiErr, fmt.Errorf("error during filepath walk: %w", err))
+				multiErr = append(multiErr, fmt.Errorf("error during filepath walk for path %s: %w", src, err))
+				panic(errors.Join(multiErr...).Error())
 				return nil
 			}
 
@@ -114,6 +125,11 @@ func (v *VolumeMountCopier) walk(srcVolume, destVolume, filePath string, isSubPa
 	}
 
 	err = v.copier(filePath, destinationFilePath, v.fileSystem)
+	if err != nil {
+		return err
+	}
+
+	err = v.fileTracker.AddFile(destinationFilePath)
 	if err != nil {
 		return err
 	}

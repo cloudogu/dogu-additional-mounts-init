@@ -21,7 +21,7 @@ func (_m *mockVolumeCopier) EXPECT() *mockVolumeCopier_Expecter {
 }
 
 // CopyVolumeMount provides a mock function with given fields: srcToDest
-func (_m *mockVolumeCopier) CopyVolumeMount(srcToDest copy.SrcToDestinationPaths) error {
+func (_m *mockVolumeCopier) CopyVolumeMount(srcToDest []copy.SrcAndDestination) error {
 	ret := _m.Called(srcToDest)
 
 	if len(ret) == 0 {
@@ -29,7 +29,7 @@ func (_m *mockVolumeCopier) CopyVolumeMount(srcToDest copy.SrcToDestinationPaths
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(copy.SrcToDestinationPaths) error); ok {
+	if rf, ok := ret.Get(0).(func([]copy.SrcAndDestination) error); ok {
 		r0 = rf(srcToDest)
 	} else {
 		r0 = ret.Error(0)
@@ -44,14 +44,14 @@ type mockVolumeCopier_CopyVolumeMount_Call struct {
 }
 
 // CopyVolumeMount is a helper method to define mock.On call
-//   - srcToDest copy.SrcToDestinationPaths
+//   - srcToDest []copy.SrcAndDestination
 func (_e *mockVolumeCopier_Expecter) CopyVolumeMount(srcToDest interface{}) *mockVolumeCopier_CopyVolumeMount_Call {
 	return &mockVolumeCopier_CopyVolumeMount_Call{Call: _e.mock.On("CopyVolumeMount", srcToDest)}
 }
 
-func (_c *mockVolumeCopier_CopyVolumeMount_Call) Run(run func(srcToDest copy.SrcToDestinationPaths)) *mockVolumeCopier_CopyVolumeMount_Call {
+func (_c *mockVolumeCopier_CopyVolumeMount_Call) Run(run func(srcToDest []copy.SrcAndDestination)) *mockVolumeCopier_CopyVolumeMount_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(copy.SrcToDestinationPaths))
+		run(args[0].([]copy.SrcAndDestination))
 	})
 	return _c
 }
@@ -61,7 +61,7 @@ func (_c *mockVolumeCopier_CopyVolumeMount_Call) Return(_a0 error) *mockVolumeCo
 	return _c
 }
 
-func (_c *mockVolumeCopier_CopyVolumeMount_Call) RunAndReturn(run func(copy.SrcToDestinationPaths) error) *mockVolumeCopier_CopyVolumeMount_Call {
+func (_c *mockVolumeCopier_CopyVolumeMount_Call) RunAndReturn(run func([]copy.SrcAndDestination) error) *mockVolumeCopier_CopyVolumeMount_Call {
 	_c.Call.Return(run)
 	return _c
 }

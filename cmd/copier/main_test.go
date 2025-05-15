@@ -14,13 +14,28 @@ func Test_handleCopyCommand(t *testing.T) {
 		oldCopyCmd := copyCmd
 		copyCmd = flag.NewFlagSet("copy", flag.ExitOnError)
 		defer func() { copyCmd = oldCopyCmd }()
-		volumeCopierMock := newMockVolumeCopier(t)
 		args := []string{"--source=/src1", "--target=/target1", "--source=/src2", "--target=/target2"}
-		expectedCopyMap := copy.SrcToDestinationPaths{"/src1": "/target1", "/src2": "/target2"}
-		volumeCopierMock.EXPECT().CopyVolumeMount(expectedCopyMap).Return(nil)
+		expectedCopyList := []copy.SrcAndDestination{
+			{Src: "/src1", Dest: "/target1"}, {Src: "/src2", Dest: "/target2"},
+		}
+
+		getter := func(filesystem filesystem, fileTracker fileTracker) volumeCopier {
+			copier := newMockVolumeCopier(t)
+			copier.EXPECT().CopyVolumeMount(expectedCopyList).Return(nil)
+			return copier
+		}
+
+		configGetter := func(cesConfigBaseDir, localConfigBaseDir string) (doguConfigReaderWriter, error) {
+			return newMockDoguConfigReaderWriter(t), nil
+		}
+		trackerGetter := func(doguConfigRegistry doguConfigReaderWriter, filesystem filesystem) fileTracker {
+			tracker := newMockFileTracker(t)
+			tracker.EXPECT().DeleteAllTrackedFiles().Return(nil)
+			return tracker
+		}
 
 		// when
-		err := handleCopyCommand(args, volumeCopierMock)
+		err := handleCopyCommand(args, getter, configGetter, trackerGetter)
 
 		// then
 		require.NoError(t, err)
@@ -31,28 +46,55 @@ func Test_handleCopyCommand(t *testing.T) {
 		oldCopyCmd := copyCmd
 		copyCmd = flag.NewFlagSet("copy", flag.ExitOnError)
 		defer func() { copyCmd = oldCopyCmd }()
-		volumeCopierMock := newMockVolumeCopier(t)
 		args := []string{"--source=/src1", "--target=/target1", "--source=/src2", "--target=/target2"}
-		expectedCopyMap := copy.SrcToDestinationPaths{"/src1": "/target1", "/src2": "/target2"}
-		volumeCopierMock.EXPECT().CopyVolumeMount(expectedCopyMap).Return(assert.AnError)
+		expectedCopyList := []copy.SrcAndDestination{
+			{Src: "/src1", Dest: "/target1"}, {Src: "/src2", Dest: "/target2"},
+		}
+		getter := func(filesystem filesystem, fileTracker fileTracker) volumeCopier {
+			copier := newMockVolumeCopier(t)
+			copier.EXPECT().CopyVolumeMount(expectedCopyList).Return(assert.AnError)
+			return copier
+		}
+
+		configGetter := func(cesConfigBaseDir, localConfigBaseDir string) (doguConfigReaderWriter, error) {
+			return newMockDoguConfigReaderWriter(t), nil
+		}
+		trackerGetter := func(doguConfigRegistry doguConfigReaderWriter, filesystem filesystem) fileTracker {
+			tracker := newMockFileTracker(t)
+			tracker.EXPECT().DeleteAllTrackedFiles().Return(nil)
+			return tracker
+		}
 
 		// when
-		err := handleCopyCommand(args, volumeCopierMock)
+		err := handleCopyCommand(args, getter, configGetter, trackerGetter)
 
 		// then
 		require.Error(t, err)
 	})
 
-	t.Run("should return nil on empty parameter", func(t *testing.T) {
+	t.Run("should return nil and delete tracked files on empty parameter", func(t *testing.T) {
 		// given
 		oldCopyCmd := copyCmd
 		copyCmd = flag.NewFlagSet("copy", flag.ExitOnError)
 		defer func() { copyCmd = oldCopyCmd }()
-		volumeCopierMock := newMockVolumeCopier(t)
 		var args []string
 
+		getter := func(filesystem filesystem, fileTracker fileTracker) volumeCopier {
+			copier := newMockVolumeCopier(t)
+			return copier
+		}
+
+		configGetter := func(cesConfigBaseDir, localConfigBaseDir string) (doguConfigReaderWriter, error) {
+			return newMockDoguConfigReaderWriter(t), nil
+		}
+		trackerGetter := func(doguConfigRegistry doguConfigReaderWriter, filesystem filesystem) fileTracker {
+			tracker := newMockFileTracker(t)
+			tracker.EXPECT().DeleteAllTrackedFiles().Return(nil)
+			return tracker
+		}
+
 		// when
-		err := handleCopyCommand(args, volumeCopierMock)
+		err := handleCopyCommand(args, getter, configGetter, trackerGetter)
 
 		// then
 		require.NoError(t, err)
@@ -63,11 +105,24 @@ func Test_handleCopyCommand(t *testing.T) {
 		oldCopyCmd := copyCmd
 		copyCmd = flag.NewFlagSet("copy", flag.ExitOnError)
 		defer func() { copyCmd = oldCopyCmd }()
-		volumeCopierMock := newMockVolumeCopier(t)
 		args := []string{"--source=/src1", "--target=/target1", "--source=/src2"}
 
+		getter := func(filesystem filesystem, fileTracker fileTracker) volumeCopier {
+			copier := newMockVolumeCopier(t)
+			return copier
+		}
+
+		configGetter := func(cesConfigBaseDir, localConfigBaseDir string) (doguConfigReaderWriter, error) {
+			return newMockDoguConfigReaderWriter(t), nil
+		}
+		trackerGetter := func(doguConfigRegistry doguConfigReaderWriter, filesystem filesystem) fileTracker {
+			tracker := newMockFileTracker(t)
+			tracker.EXPECT().DeleteAllTrackedFiles().Return(nil)
+			return tracker
+		}
+
 		// when
-		err := handleCopyCommand(args, volumeCopierMock)
+		err := handleCopyCommand(args, getter, configGetter, trackerGetter)
 
 		// then
 		require.Error(t, err)
