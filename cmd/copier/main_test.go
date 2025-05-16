@@ -11,9 +11,7 @@ import (
 func Test_handleCopyCommand(t *testing.T) {
 	t.Run("should call copy subsequent src to destination volumes", func(t *testing.T) {
 		// given
-		oldCopyCmd := copyCmd
 		copyCmd = flag.NewFlagSet("copy", flag.ExitOnError)
-		defer func() { copyCmd = oldCopyCmd }()
 		args := []string{"--source=/src1", "--target=/target1", "--source=/src2", "--target=/target2"}
 		expectedCopyList := []copy.SrcAndDestination{
 			{Src: "/src1", Dest: "/target1"}, {Src: "/src2", Dest: "/target2"},
@@ -43,9 +41,7 @@ func Test_handleCopyCommand(t *testing.T) {
 
 	t.Run("should return error on copy error error", func(t *testing.T) {
 		// given
-		oldCopyCmd := copyCmd
 		copyCmd = flag.NewFlagSet("copy", flag.ExitOnError)
-		defer func() { copyCmd = oldCopyCmd }()
 		args := []string{"--source=/src1", "--target=/target1", "--source=/src2", "--target=/target2"}
 		expectedCopyList := []copy.SrcAndDestination{
 			{Src: "/src1", Dest: "/target1"}, {Src: "/src2", Dest: "/target2"},
@@ -74,9 +70,7 @@ func Test_handleCopyCommand(t *testing.T) {
 
 	t.Run("should return nil and delete tracked files on empty parameter", func(t *testing.T) {
 		// given
-		oldCopyCmd := copyCmd
 		copyCmd = flag.NewFlagSet("copy", flag.ExitOnError)
-		defer func() { copyCmd = oldCopyCmd }()
 		var args []string
 
 		getter := func(filesystem filesystem, fileTracker fileTracker) volumeCopier {
@@ -102,9 +96,7 @@ func Test_handleCopyCommand(t *testing.T) {
 
 	t.Run("should return error on odd parameters", func(t *testing.T) {
 		// given
-		oldCopyCmd := copyCmd
 		copyCmd = flag.NewFlagSet("copy", flag.ExitOnError)
-		defer func() { copyCmd = oldCopyCmd }()
 		args := []string{"--source=/src1", "--target=/target1", "--source=/src2"}
 
 		getter := func(filesystem filesystem, fileTracker fileTracker) volumeCopier {
