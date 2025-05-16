@@ -209,7 +209,7 @@ func TestCopier_walk(t *testing.T) {
 		assert.ErrorIs(t, assert.AnError, err)
 	})
 
-	t.Run("should return error if the source file is not a regular file", func(t *testing.T) {
+	t.Run("should return nil if the source file is not a regular file", func(t *testing.T) {
 		// given
 		srcFile := "/tmp/mount/file"
 		srcFileInfo := &myFileInfo{mode: os.ModeSymlink, isDir: false}
@@ -221,8 +221,7 @@ func TestCopier_walk(t *testing.T) {
 		err := sut.walk("", "", srcFile, false, dirEntry)
 
 		// then
-		require.Error(t, err)
-		assert.ErrorContains(t, err, "source file /tmp/mount/file is not a regular file")
+		require.NoError(t, err)
 	})
 
 	t.Run("should return error if the destination file exists but is not a regular file", func(t *testing.T) {

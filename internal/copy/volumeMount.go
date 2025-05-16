@@ -113,7 +113,8 @@ func (v *VolumeMountCopier) walk(srcVolume, destVolume, filePath string, isSubPa
 	}
 
 	if !sourceFileInfo.Mode().IsRegular() {
-		return fmt.Errorf("source file %s is not a regular file", filePath)
+		log.Printf("skip source file %s because it is not a regular file", filePath)
+		return nil
 	}
 
 	var rel string
