@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	defaultCesConfigBaseDir   = "/etc/ces/config"
-	defaultLocalConfigBaseDir = "/var/ces/config"
+	defaultCesConfigBaseDir   = "/dogumount/etc/ces/config"
+	defaultLocalConfigBaseDir = "/dogumount/var/ces/config"
 )
 
 var (
