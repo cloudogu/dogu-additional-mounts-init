@@ -69,5 +69,9 @@ func (f FileSystem) Copy(dst io.Writer, src io.Reader) (written int64, err error
 }
 
 func (f FileSystem) DeleteFile(path string) error {
-	return os.Remove(path)
+	if _, err := f.Stat(path); err == nil {
+		return os.Remove(path)
+	}
+
+	return nil
 }
