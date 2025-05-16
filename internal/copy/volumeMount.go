@@ -33,7 +33,7 @@ func NewVolumeMountCopier(fileSystem Filesystem, fileTracker fileTracker) *Volum
 }
 
 // CopyVolumeMount copies all files from the given src path in srcToDest parameter to the associate destination path.
-// It only handles regular files and stops if an error occurs.
+// It only handles regular files.
 // Existing files will be overwritten.
 // If the volume was mounted without the subPath attribute, it resolves the data symlink and copies the real files
 // from the mount. In such cases, it is possible that there are also subPath volume mounts in the directory.
