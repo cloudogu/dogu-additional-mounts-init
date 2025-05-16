@@ -39,7 +39,7 @@ func main() {
 	}
 }
 
-func handleCopyCommand(args []string, copierGetter copierGetter, configGetter doguConfigGetter, fileTrackerGetter fileTrackerGetter) error {
+func handleCopyCommand(args []string, volumeMountCopyGetter copierGetter, configGetter doguConfigGetter, fileTrackerGetter fileTrackerGetter) error {
 	cesConfigBaseDir := copyCmd.String("cesConfigBaseDir", defaultCesConfigBaseDir, fmt.Sprintf("Defines the base dir for the dogu config - defaults to %s", defaultCesConfigBaseDir))
 	localConfigBaseDir := copyCmd.String("localConfigBaseDir", defaultLocalConfigBaseDir, fmt.Sprintf("Defines the base dir for the local dogu config - defaults to %s", defaultLocalConfigBaseDir))
 
@@ -65,7 +65,7 @@ func handleCopyCommand(args []string, copierGetter copierGetter, configGetter do
 		return err
 	}
 
-	copier := copierGetter(fileSystem, fileTracker)
+	volumeMountCopy := volumeMountCopyGetter(fileSystem, fileTracker)
 
 	if len(sourcePaths) != len(targetPaths) {
 		return fmt.Errorf("amount of source and target paths aren't equal")
@@ -84,7 +84,7 @@ func handleCopyCommand(args []string, copierGetter copierGetter, configGetter do
 		})
 	}
 
-	err = copier.CopyVolumeMount(copyList)
+	err = volumeMountCopy.CopyVolumeMount(copyList)
 	if err != nil {
 		return err
 	}
