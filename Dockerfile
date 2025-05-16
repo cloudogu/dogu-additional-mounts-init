@@ -36,6 +36,6 @@ WORKDIR /
 
 USER 1000:1000
 
-COPY --chown=1000:1000 --chmod=550 --from=builder /workspace/target/dogu-data-seeder /dogu-data-seeder
+COPY --chown=root:1000 --chmod=644 --from=builder /workspace/target/dogu-data-seeder /dogu-data-seeder
 
 ENTRYPOINT ["/dogu-data-seeder"]
