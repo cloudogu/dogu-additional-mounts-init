@@ -8,6 +8,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 )
 
 type SrcAndDestination struct {
@@ -34,11 +35,13 @@ func NewVolumeMountCopier(fileSystem Filesystem, fileTracker fileTracker) *Volum
 // CopyVolumeMount copies all files from the given src path in srcToDest parameter to the given paths.
 // It only handles regular files and stops if an error occurs.
 // Existing files will be overwritten.
-// If the volume was mounted without the subPath Attribute it resolves the data symlink and copies the real files
-// from the mount. If the subPath attribute was used it just copies all regular files to the destination.
+// If the volume was mounted without the subPath attribute, it resolves the data symlink and copies the real files
+// from the mount. In such cases, it is possible that there are also subPath volume mounts in the directory.
+// Therefore, this method will walk through the dir behind the symlink and the root of the mount.
+// In the second run the symlinks will be ignored.
+// If only the subPath attribute was used, it just copies all regular files to the destination.
 func (v *VolumeMountCopier) CopyVolumeMount(srcToDest []SrcAndDestination) error {
 	var multiErr []error
-	isSubPathMount := true
 
 	for _, obj := range srcToDest {
 		src := obj.Src
@@ -51,29 +54,44 @@ func (v *VolumeMountCopier) CopyVolumeMount(srcToDest []SrcAndDestination) error
 		if err == nil && dataFileInfo.Mode()&os.ModeSymlink != 0 {
 			log.Println("Detected data symlink")
 			// this volume was mounted without a subPath and all regular files are actually behind symlinks
-			// set src to the real folder e.g. src/..2025_05_07_4643786234
-			isSubPathMount = false
+			// e.g. src/..2025_05_07_4643786234
 			var symErr error
-			src, symErr = v.resolveDataSymlink(data)
+			realDir, symErr := v.resolveDataSymlink(data)
 			if symErr != nil {
 				return fmt.Errorf("failed to resolve data dir symlink %s: %w", data, err)
 			}
+
+			multiErr = append(multiErr, v.walkDir(realDir, dest, false))
 		}
 
-		err = v.fileSystem.WalkDir(src, func(path string, d fs.DirEntry, err error) error {
-			if err != nil {
-				multiErr = append(multiErr, fmt.Errorf("error during filepath walk for path %s: %w", path, err))
-				return nil
-			}
-
-			multiErr = append(multiErr, v.walk(src, dest, path, isSubPathMount, d))
-			return nil
-		})
-
-		if err != nil {
-			multiErr = append(multiErr, fmt.Errorf("error copy files from directory %s to %s: %w", src, dest, err))
-		}
+		// Copy all files mounted as subpaths
+		multiErr = append(multiErr, v.walkDir(src, dest, true))
 	}
+	return errors.Join(multiErr...)
+}
+
+func (v *VolumeMountCopier) walkDir(src, dest string, copySubPathMounts bool) error {
+	var multiErr []error
+
+	err := v.fileSystem.WalkDir(src, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			multiErr = append(multiErr, fmt.Errorf("error during filepath walk for path %s: %w", path, err))
+			return nil
+		}
+
+		// If We want to copy real files mounted from subpaths, ignore potential mount with symlink structure.
+		if copySubPathMounts && d.IsDir() && (strings.HasPrefix(d.Name(), "..") || d.Name() == "..data") {
+			return fs.SkipDir
+		}
+
+		multiErr = append(multiErr, v.walk(src, dest, path, copySubPathMounts, d))
+		return nil
+	})
+
+	if err != nil {
+		multiErr = append(multiErr, err)
+	}
+
 	return errors.Join(multiErr...)
 }
 

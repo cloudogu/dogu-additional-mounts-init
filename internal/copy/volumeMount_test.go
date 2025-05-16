@@ -72,7 +72,7 @@ func TestVolumeMountCopier_CopyVolumeMount(t *testing.T) {
 		require.NoError(t, err)
 	})
 
-	t.Run("should handle file without subPath volume mount", func(t *testing.T) {
+	t.Run("should handle symlinked folder separate", func(t *testing.T) {
 		// given
 		copies := []SrcAndDestination{
 			{
@@ -98,6 +98,7 @@ func TestVolumeMountCopier_CopyVolumeMount(t *testing.T) {
 		fileSystemMock.EXPECT().EvalSymlinks(symLinkPath).Return(realDirPath, nil)
 		fileSystemMock.EXPECT().Stat(realDirPath).Return(realDataDirInfo, nil)
 		fileSystemMock.EXPECT().WalkDir(realDirPath, mock.AnythingOfType("fs.WalkDirFunc")).Return(nil)
+		fileSystemMock.EXPECT().WalkDir("/mount", mock.AnythingOfType("fs.WalkDirFunc")).Return(nil)
 
 		sut.fileSystem = fileSystemMock
 
