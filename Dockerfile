@@ -36,6 +36,6 @@ WORKDIR /
 
 USER 1000:1000
 
-COPY --chown=15000:15000 --from=builder /workspace/target/dogu-data-seeder /dogu-data-seeder
+COPY --chown=1000:1000 --from=builder /workspace/target/dogu-data-seeder /dogu-data-seeder
 
 ENTRYPOINT ["/dogu-data-seeder"]
