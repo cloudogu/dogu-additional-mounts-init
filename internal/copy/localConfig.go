@@ -39,10 +39,12 @@ func (t *LocalConfigFileTracker) DeleteAllTrackedFiles() error {
 		multiErr = append(multiErr, t.fileSystem.DeleteFile(path))
 	}
 
-	// TODO Should we reset the list only if multiErr is nil?
-	err = t.doguConfig.Set(additionalMountsConfigKey, "")
-	if err != nil {
-		return fmt.Errorf("failed to reset local config key %s: %w", additionalMounts, err)
+	// Only delete all files from config if they are really deleted.
+	if len(multiErr) == 0 {
+		err = t.doguConfig.Set(additionalMountsConfigKey, "")
+		if err != nil {
+			return fmt.Errorf("failed to reset local config key %s: %w", additionalMounts, err)
+		}
 	}
 
 	return errors.Join(multiErr...)
