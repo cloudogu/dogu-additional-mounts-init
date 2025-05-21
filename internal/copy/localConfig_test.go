@@ -8,10 +8,7 @@ import (
 
 func TestLocalConfigFileTracker_DeleteAllTrackedFiles(t1 *testing.T) {
 	keyAdditionalMounts := "additionalMounts"
-	yamlFiles := `
-  - /path/database
-  - /path/config
-`
+	yamlFiles := "- /path/database\n- /path/config\n"
 
 	type fields struct {
 		doguConfig func(t *testing.T) doguConfigReaderWriter
@@ -73,7 +70,6 @@ func TestLocalConfigFileTracker_DeleteAllTrackedFiles(t1 *testing.T) {
 					doguConfigMock := newMockDoguConfigReaderWriter(t)
 					doguConfigMock.EXPECT().Exists(keyAdditionalMounts).Return(true, nil)
 					doguConfigMock.EXPECT().Get(keyAdditionalMounts).Return(yamlFiles, nil)
-					doguConfigMock.EXPECT().Set(keyAdditionalMounts, "").Return(nil)
 
 					return doguConfigMock
 				},

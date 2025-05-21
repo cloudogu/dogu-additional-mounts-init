@@ -40,7 +40,7 @@ func (t *LocalConfigFileTracker) DeleteAllTrackedFiles() error {
 	}
 
 	// Only delete all files from config if they are really deleted.
-	if len(multiErr) == 0 {
+	if errors.Join(multiErr...) == nil {
 		err = t.doguConfig.Set(additionalMountsConfigKey, "")
 		if err != nil {
 			return fmt.Errorf("failed to reset local config key %s: %w", additionalMounts, err)
