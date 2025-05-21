@@ -127,14 +127,8 @@ func TestLocalConfigFileTracker_DeleteAllTrackedFiles(t1 *testing.T) {
 
 func TestLocalConfigFileTracker_AddFile(t1 *testing.T) {
 	keyAdditionalMounts := "additionalMounts"
-	actualYamlFiles := `
-  - /path/database
-  - /path/config
-`
-	expectedYamlFiles := `- /path/database
-- /path/config
-- /path/new
-`
+	actualYamlFiles := "- /path/database\n- /path/config\n"
+	expectedYamlFiles := "- /path/database\n- /path/config\n- /path/new\n"
 
 	type fields struct {
 		doguConfig func(t *testing.T) doguConfigReaderWriter
