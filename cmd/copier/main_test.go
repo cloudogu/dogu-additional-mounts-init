@@ -39,7 +39,7 @@ func Test_handleCopyCommand(t *testing.T) {
 		require.NoError(t, err)
 	})
 
-	t.Run("should return error on copy error error", func(t *testing.T) {
+	t.Run("should return error on copy error", func(t *testing.T) {
 		// given
 		copyCmd = flag.NewFlagSet("copy", flag.ExitOnError)
 		args := []string{"--source=/src1", "--target=/target1", "--source=/src2", "--target=/target2"}
