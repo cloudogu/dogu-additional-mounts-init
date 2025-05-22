@@ -7,6 +7,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [v0.1.0] - 2025-05-22
+
 ### Added
 
 - [#1] Add first version of the dogu data seeder with the copy function for volume mounts.

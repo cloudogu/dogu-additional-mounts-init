@@ -147,10 +147,16 @@ void stageAutomaticRelease() {
         String appVersion = makefile.getVersion()
 
         stage('Build & Push Image') {
-            def dockerImage = docker.build("cloudogu/${repositoryName}:${appVersion}")
-
-            docker.withRegistry('https://registry.hub.docker.com/', 'dockerHubCredentials') {
-                dockerImage.push("${appVersion}")
+            try {
+                withCredentials([usernamePassword(credentialsId: 'cesmarvin', usernameVariable: 'GIT_AUTH_USR', passwordVariable: 'GITHUB_API_TOKEN')]) {
+                    createCredentialsFile("${GIT_AUTH_USR}", "${GITHUB_API_TOKEN}")
+                }
+                def dockerImage = docker.build("cloudogu/${repositoryName}:${appVersion}")
+                docker.withRegistry('https://registry.hub.docker.com/', 'dockerHubCredentials') {
+                    dockerImage.push("${appVersion}")
+                }
+            } finally {
+                removeCredentialsFile()
             }
         }
 
