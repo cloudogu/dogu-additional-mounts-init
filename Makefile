@@ -1,5 +1,5 @@
 ARTIFACT_ID=dogu-data-seeder
-VERSION=0.0.0
+VERSION=0.1.0
 MAKEFILES_VERSION=9.9.1
 IMAGE=cloudogu/${ARTIFACT_ID}:${VERSION}
 GOTAG?=1.24
@@ -19,3 +19,4 @@ include build/make/static-analysis.mk
 include build/make/clean.mk
 include build/make/digital-signature.mk
 include build/make/mocks.mk
+include build/make/release.mk
