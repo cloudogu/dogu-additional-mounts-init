@@ -10,6 +10,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 - Naming from `dogu-data-seeder` to `dogu-additional-mounts-init` for consistent naming with the dogu-operator.
+- **Attention**: This also changes the artefact name from `dogu-data-seeder` to `dogu-additional-mounts-init`. Keep in mind to update your image references.
 
 ## [v0.1.0] - 2025-05-22
 
