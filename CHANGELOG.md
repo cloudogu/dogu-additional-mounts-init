@@ -7,6 +7,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [v0.1.1] - 2025-06-02
+
 ### Changed
 
 - Naming from `dogu-data-seeder` to `dogu-additional-mounts-init` for consistent naming with the dogu-operator.
