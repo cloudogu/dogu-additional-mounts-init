@@ -14,7 +14,7 @@ goVersion = "1.24.2"
 
 // Configuration of repository
 repositoryOwner = "cloudogu"
-repositoryName = "dogu-data-seeder"
+repositoryName = "dogu-additional-mounts-init"
 project = "github.com/${repositoryOwner}/${repositoryName}"
 
 // Configuration of branches

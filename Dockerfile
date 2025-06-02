@@ -29,13 +29,13 @@ RUN make compile-generic
 
 FROM gcr.io/distroless/static:nonroot
 LABEL maintainer="hello@cloudogu.com" \
-      NAME="dogu-data-seeder" \
-      VERSION="0.1.0"
+      NAME="dogu-additional-mounts-init" \
+      VERSION="0.1.1"
 
 WORKDIR /
 
 USER 1000:1000
 
-COPY --chown=1000:1000 --chmod=550 --from=builder /workspace/target/dogu-data-seeder /dogu-data-seeder
+COPY --chown=1000:1000 --chmod=550 --from=builder /workspace/target/dogu-additional-mounts-init /dogu-additional-mounts-init
 
-ENTRYPOINT ["/dogu-data-seeder"]
+ENTRYPOINT ["/dogu-additional-mounts-init"]

@@ -1,4 +1,4 @@
-module github.com/cloudogu/dogu-data-seeder
+module github.com/cloudogu/dogu-additional-mounts-init
 
 go 1.24.2
 
