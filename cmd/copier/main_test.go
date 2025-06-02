@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"github.com/cloudogu/dogu-data-seeder/internal/copy"
+	"github.com/cloudogu/dogu-additional-mounts-init/internal/copy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"

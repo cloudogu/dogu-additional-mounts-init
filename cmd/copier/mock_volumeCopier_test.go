@@ -3,7 +3,7 @@
 package main
 
 import (
-	copy "github.com/cloudogu/dogu-data-seeder/internal/copy"
+	copy "github.com/cloudogu/dogu-additional-mounts-init/internal/copy"
 	mock "github.com/stretchr/testify/mock"
 )
 

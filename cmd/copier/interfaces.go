@@ -1,6 +1,6 @@
 package main
 
-import "github.com/cloudogu/dogu-data-seeder/internal/copy"
+import "github.com/cloudogu/dogu-additional-mounts-init/internal/copy"
 
 type volumeCopier interface {
 	CopyVolumeMount(srcToDest []copy.SrcAndDestination) error

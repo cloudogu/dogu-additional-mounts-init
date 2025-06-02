@@ -4,7 +4,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/cloudogu/dogu-data-seeder/internal/copy"
+	"github.com/cloudogu/dogu-additional-mounts-init/internal/copy"
 	"github.com/cloudogu/doguctl/registry"
 	"log"
 	"os"

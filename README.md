@@ -1,4 +1,4 @@
-# dogu-data-seeder
+# dogu-additional-mounts-init
 
 Init-Container for Cloudogu EcoSystem Dogus in Kubernetes
 

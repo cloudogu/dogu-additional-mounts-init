@@ -1,4 +1,4 @@
-ARTIFACT_ID=dogu-data-seeder
+ARTIFACT_ID=dogu-additional-mounts-init
 VERSION=0.1.0
 MAKEFILES_VERSION=9.9.1
 IMAGE=cloudogu/${ARTIFACT_ID}:${VERSION}
