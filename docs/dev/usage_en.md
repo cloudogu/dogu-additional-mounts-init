@@ -19,6 +19,6 @@ At every start, the application deletes all files defined in the config to ensur
 
 > You have to create the config files `normal/config.yaml` and `sensitive/config.yaml` in cesConfigBaseDir.
 
-`target/dogu-data-seeder copy --cesConfigBaseDir=. --localConfigBaseDir=. --source=./cmd --target=./cmdCopy --source=./build --target=./buildCopy`
+`target/dogu-additional-mounts-init copy --cesConfigBaseDir=. --localConfigBaseDir=. --source=./cmd --target=./cmdCopy --source=./build --target=./buildCopy`
 
 Where each source will be copied to the immediately following target.
