@@ -6,13 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- [#5] Remove the permissions from the binary because the container will be executed with different uids and gids defined from the kubernetes security context. Otherwise, the container can not start.
 
 ## [v0.1.1] - 2025-06-02
 
 ### Changed
 
 - Naming from `dogu-data-seeder` to `dogu-additional-mounts-init` for consistent naming with the dogu-operator.
-- **Attention**: This also changes the artefact name from `dogu-data-seeder` to `dogu-additional-mounts-init`. Keep in mind to update your image references.
+- **Attention**: This also changes the artifact name from `dogu-data-seeder` to `dogu-additional-mounts-init`. Keep in mind to update your image references.
 
 ## [v0.1.0] - 2025-05-22
 
