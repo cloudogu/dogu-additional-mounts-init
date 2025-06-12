@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [v0.1.2] - 2025-06-12
 ### Fixed
 - [#5] Remove the permissions from the binary because the container will be executed with different uids and gids defined from the kubernetes security context. Otherwise, the container can not start.
 
