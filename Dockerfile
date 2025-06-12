@@ -30,7 +30,7 @@ RUN make compile-generic
 FROM gcr.io/distroless/static:nonroot
 LABEL maintainer="hello@cloudogu.com" \
       NAME="dogu-additional-mounts-init" \
-      VERSION="0.1.1"
+      VERSION="0.1.2"
 
 WORKDIR /
 
