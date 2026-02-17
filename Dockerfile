@@ -1,5 +1,5 @@
 # Build the manager binary
-FROM golang:1.24.2 AS builder
+FROM golang:1.26.0 AS builder
 
 WORKDIR /workspace
 
@@ -30,7 +30,7 @@ RUN make compile-generic
 FROM gcr.io/distroless/static:nonroot
 LABEL maintainer="hello@cloudogu.com" \
       NAME="dogu-additional-mounts-init" \
-      VERSION="0.1.2"
+      VERSION="0.1.3"
 
 WORKDIR /
 

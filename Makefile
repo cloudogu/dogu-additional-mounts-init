@@ -1,8 +1,9 @@
 ARTIFACT_ID=dogu-additional-mounts-init
-VERSION=0.1.2
-MAKEFILES_VERSION=9.9.1
+VERSION=0.1.3
+MAKEFILES_VERSION=10.6.0
 IMAGE=cloudogu/${ARTIFACT_ID}:${VERSION}
-GOTAG?=1.24
+GOTAG?=1.26
+LINT_VERSION?=v2.9.0
 MOCKERY_IGNORED=vendor,build,docs,generatedv
 
 GOOS   ?= $(shell go env GOOS)
