@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [v0.1.3] - 2026-02-17
 ### Security
 - [#7] Fix Go stdlib CVE-2025-68121
 
