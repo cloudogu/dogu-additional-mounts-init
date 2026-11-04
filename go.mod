@@ -1,6 +1,6 @@
 module github.com/cloudogu/dogu-additional-mounts-init
 
-go 1.26.0
+go 1.27.3
 
 require (
 	github.com/cloudogu/doguctl v0.13.2
