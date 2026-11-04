@@ -102,6 +102,34 @@ node('docker') {
                     archiveArtifacts artifacts: 'target/trivy/report.txt', allowEmptyArchive: true
                 }
             }
+            // Scan the binary separately to include the Go toolchain's standard library.
+            catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE', catchInterruptions: false) {
+                sh 'mkdir -p target/trivy'
+                try {
+                    sh '''
+                        {
+                            if [ ! -s target/dogu-additional-mounts-init ]; then
+                                echo 'Built Go binary is missing or empty.' >&2
+                                exit 1
+                            fi
+                            docker run --rm \
+                                --user "$(id -u):$(id -g)" \
+                                --env TRIVY_CACHE_DIR=/tmp/trivy-cache \
+                                --volume "$WORKSPACE:/workspace:ro" \
+                                --workdir /workspace \
+                                aquasec/trivy:0.76.1 rootfs \
+                                --scanners vuln \
+                                --severity HIGH,CRITICAL \
+                                --exit-code 0 \
+                                --timeout 5m \
+                                --format table target/dogu-additional-mounts-init
+                        } > target/trivy/binary-report.txt 2>&1
+                    '''
+                } finally {
+                    sh 'cat target/trivy/binary-report.txt'
+                    archiveArtifacts artifacts: 'target/trivy/binary-report.txt', allowEmptyArchive: true
+                }
+            }
         }
 
         stage('SonarQube') {
