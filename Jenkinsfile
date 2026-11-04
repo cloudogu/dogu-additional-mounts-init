@@ -77,6 +77,33 @@ node('docker') {
                             }
                         }
 
+        stage('Trivy scan') {
+            catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE', catchInterruptions: false) {
+                sh 'mkdir -p target/trivy'
+                try {
+                    sh '''
+                        docker run --rm \
+                            --user "$(id -u):$(id -g)" \
+                            --env TRIVY_CACHE_DIR=/tmp/trivy-cache \
+                            --volume "$WORKSPACE:/workspace:ro" \
+                            --workdir /workspace \
+                            aquasec/trivy:0.76.1 fs \
+                            --scanners vuln \
+                            --severity HIGH,CRITICAL \
+                            --exit-code 0 \
+                            --timeout 5m \
+                            --skip-dirs vendor \
+                            --skip-dirs .bin \
+                            --skip-dirs build/tmp \
+                            --format table . > target/trivy/report.txt 2>&1
+                    '''
+                } finally {
+                    sh 'cat target/trivy/report.txt'
+                    archiveArtifacts artifacts: 'target/trivy/report.txt', allowEmptyArchive: true
+                }
+            }
+        }
+
         stage('SonarQube') {
             stageStaticAnalysisSonarQube()
         }
