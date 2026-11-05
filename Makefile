@@ -1,5 +1,5 @@
 ARTIFACT_ID=dogu-additional-mounts-init
-VERSION=0.1.3
+VERSION=0.1.4
 MAKEFILES_VERSION=11.2.0
 IMAGE=cloudogu/${ARTIFACT_ID}:${VERSION}
 GOTAG?=1.27.3
