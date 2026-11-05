@@ -7,6 +7,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [v0.1.4] - 2026-11-05
 ### Security
 - [#10] Update Go to 1.27.3 and golangci-lint to v2.15.0 to fix various CVEs.
 
